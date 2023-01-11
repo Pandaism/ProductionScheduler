@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TreeTableView?>
+<?import javafx.scene.control.TreeTableColumn?>
+<?import javafx.scene.control.ScrollPane?>
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="net.safefleet.prod.productionscheduler.controllers.MainFrameController">
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+    </padding>
+
+    <top>
+        <HBox alignment="CENTER">
+           <AnchorPane>
+               <Label fx:id="headerText" text="Production Schedule for Week"/>
+           </AnchorPane>
+        </HBox>
+    </top>
+    <center>
+        <AnchorPane style="-fx-background-color: #694869">
+            <HBox AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0" style="-fx-background-color: #225425">
+                <ScrollPane fx:id="mondayScrollbar" fitToHeight="true" fitToWidth="true" HBox.hgrow="ALWAYS">
+                    <TableView fx:id="mondayTable" >
+                        <columns>
+                            <TableColumn fx:id="mondayCol" text="Monday"/>
+                        </columns>
+                    </TableView>
+                </ScrollPane>
+                <ScrollPane fx:id="tuesdayScrollbar" fitToHeight="true" fitToWidth="true" HBox.hgrow="ALWAYS">
+                    <TableView fx:id="tuesdayTable">
+                        <columns>
+                            <TableColumn fx:id="tuesdayCol" text="Tuesday"/>
+                        </columns>
+                    </TableView>
+                </ScrollPane>
+                <ScrollPane fx:id="wednesdayScrollbar" fitToHeight="true" fitToWidth="true" HBox.hgrow="ALWAYS">
+                    <TableView fx:id="wednesdayTable">
+                        <columns>
+                            <TableColumn fx:id="wednesdayCol" text="Wednesday"/>
+                        </columns>
+                    </TableView>
+                </ScrollPane>
+                <ScrollPane fx:id="thursdayScrollbar" fitToHeight="true" fitToWidth="true" HBox.hgrow="ALWAYS">
+                    <TableView fx:id="thursdayTable">
+                        <columns>
+                            <TableColumn fx:id="thursdayCol" text="Thursday"/>
+                        </columns>
+                    </TableView>
+                </ScrollPane>
+                <ScrollPane fx:id="fridayScrollbar" fitToHeight="true" fitToWidth="true" HBox.hgrow="ALWAYS">
+                    <TableView fx:id="fridayTable">
+                        <columns>
+                            <TableColumn fx:id="fridayCol" text="Friday"/>
+                        </columns>
+                    </TableView>
+                </ScrollPane>
+            </HBox>
+        </AnchorPane>
+    </center>
+
+</BorderPane>

@@ -1,0 +1,32 @@
+.table-cell {
+  -fx-font-size: 18px;
+}
+
+.table-column {
+  -fx-font-size: 20px;
+}
+
+.table-view {
+  -fx-base: #333;
+  -fx-control-inner-background: #444;
+  -fx-table-cell-border-color: #333;
+  -fx-table-header-border-color: #333;
+  -fx-selection-bar: #222;
+  -fx-selection-bar-non-focused: #333;
+}
+
+.table-row-cell {
+  -fx-text-fill: #fff;
+}
+
+.table-view .column-header-background {
+  -fx-background-color: #333;
+}
+
+.table-view .column-header, .table-view .filler {
+  -fx-text-fill: #fff;
+}
+
+.table-view .column-header .label {
+  -fx-padding: 0.6666666666666666em;
+}
