@@ -1,18 +1,13 @@
 package net.safefleet.prod.productionscheduler.controllers;
 
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
-import javafx.application.Platform;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.util.Duration;
+import javafx.util.Callback;
 import net.safefleet.prod.productionscheduler.data.SalesOrder;
 import net.safefleet.prod.productionscheduler.thread.AutoScrollingThread;
 import net.safefleet.prod.productionscheduler.thread.DateUpdaterThread;
+import net.safefleet.prod.productionscheduler.thread.ExpandableReaderThread;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,33 +21,21 @@ import java.util.stream.Collectors;
 public class MainFrameController {
     public Label headerText;
 
-    public TableView<SalesOrder> mondayTable;
-    public TableView<SalesOrder> tuesdayTable;
-    public TableView<SalesOrder> wednesdayTable;
-    public TableView<SalesOrder> thursdayTable;
-    public TableView<SalesOrder> fridayTable;
+    public TableView<SalesOrder> firstTable;
+    public TableView<SalesOrder> secondTable;
 
-    public TableColumn<SalesOrder, String> mondayCol;
-    public TableColumn<SalesOrder, String> tuesdayCol;
-    public TableColumn<SalesOrder, String> wednesdayCol;
-    public TableColumn<SalesOrder, String> thursdayCol;
-    public TableColumn<SalesOrder, String> fridayCol;
-    public ScrollPane mondayScrollbar;
-    public ScrollPane tuesdayScrollbar;
-    public ScrollPane wednesdayScrollbar;
-    public ScrollPane thursdayScrollbar;
-    public ScrollPane fridayScrollbar;
+    public TableColumn<SalesOrder, String> firstCol;
+    public TableColumn<SalesOrder, String> secondCol;
+    public ScrollPane firstScrollbar;
+    public ScrollPane secondScrollbar;
 
     public void initialize() {
         ScheduledExecutorService executorService = Executors.newScheduledThreadPool(3);
         executorService.scheduleAtFixedRate(new DateUpdaterThread(this.headerText), 0, 1, TimeUnit.DAYS);
-        executorService.scheduleAtFixedRate(new AutoScrollingThread(this.mondayScrollbar, this.tuesdayScrollbar, this.wednesdayScrollbar, this.thursdayScrollbar, this.fridayScrollbar), 0, 5, TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(new AutoScrollingThread(this.firstScrollbar, this.secondScrollbar), 0, 5, TimeUnit.SECONDS);
 
-        this.mondayTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        this.tuesdayTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        this.wednesdayTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        this.thursdayTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        this.fridayTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        this.firstTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        this.secondTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         TableColumn monSOCol = new TableColumn("SO");
         monSOCol.setCellValueFactory(new PropertyValueFactory<>("salesOrderNumber"));
@@ -88,7 +71,7 @@ public class MainFrameController {
             }
         });
 
-        this.mondayCol.getColumns().addAll(monSOCol, monPIDCol, monQuantityCol);
+        this.firstCol.getColumns().addAll(monSOCol, monPIDCol, monQuantityCol);
 
         TableColumn tuesSOCol = new TableColumn("SO");
         tuesSOCol.setCellValueFactory(new PropertyValueFactory<>("salesOrderNumber"));
@@ -108,121 +91,25 @@ public class MainFrameController {
             }
         });
         TableColumn tuesQuantityCol = new TableColumn("Quantity");
-        tuesQuantityCol.setCellFactory(param -> new TableCell<SalesOrder, Integer>() {
-            @Override
-            protected void updateItem(Integer item, boolean empty) {
-                super.updateItem(item, empty);
-                int index = getIndex();
-                if (index >= 0 && index < getTableView().getItems().size()) {
-                    SalesOrder so = getTableView().getItems().get(index);
-                    List<Integer> quantities = so.getParts().stream().map(SalesOrder.Parts::getQuantities).collect(Collectors.toList());
-                    setText(String.join("\n", quantities.stream().map(Object::toString).collect(Collectors.toList())));
-                } else {
-                    setText(null);
+        tuesQuantityCol.setCellFactory(param -> {
+            return new TableCell<SalesOrder, Integer>() {
+                @Override
+                protected void updateItem(Integer item, boolean empty) {
+                    super.updateItem(item, empty);
+                    int index = getIndex();
+                    if (index >= 0 && index < getTableView().getItems().size()) {
+                        SalesOrder so = getTableView().getItems().get(index);
+                        List<Integer> quantities = so.getParts().stream().map(SalesOrder.Parts::getQuantities).collect(Collectors.toList());
+                        setText(String.join("\n", quantities.stream().map(Object::toString).collect(Collectors.toList())));
+                    } else {
+                        setText(null);
+                    }
                 }
-            }
+            };
         });
-        this.tuesdayCol.getColumns().addAll(tuesSOCol,tuesPIDCol, tuesQuantityCol);
+        this.secondCol.getColumns().addAll(tuesSOCol,tuesPIDCol, tuesQuantityCol);
 
-        TableColumn wedSOCol = new TableColumn("SO");
-        TableColumn wedPIDCol = new TableColumn("PID");
-        wedPIDCol.setCellFactory(param -> new TableCell<SalesOrder, String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                int index = getIndex();
-                if (index >= 0 && index < getTableView().getItems().size()) {
-                    SalesOrder so = getTableView().getItems().get(index);
-                    List<String> pids = so.getParts().stream().map(SalesOrder.Parts::getId).collect(Collectors.toList());
-                    setText(String.join("\n", pids));
-                } else {
-                    setText(null);
-                }
-            }
-        });
-        TableColumn wedQuantityCol = new TableColumn("Quantity");
-        wedQuantityCol.setCellFactory(param -> new TableCell<SalesOrder, Integer>() {
-            @Override
-            protected void updateItem(Integer item, boolean empty) {
-                super.updateItem(item, empty);
-                int index = getIndex();
-                if (index >= 0 && index < getTableView().getItems().size()) {
-                    SalesOrder so = getTableView().getItems().get(index);
-                    List<Integer> quantities = so.getParts().stream().map(SalesOrder.Parts::getQuantities).collect(Collectors.toList());
-                    setText(String.join("\n", quantities.stream().map(Object::toString).collect(Collectors.toList())));
-                } else {
-                    setText(null);
-                }
-            }
-        });
-        this.wednesdayCol.getColumns().addAll(wedSOCol, wedPIDCol, wedQuantityCol);
-
-        TableColumn thursSOCol = new TableColumn("SO");
-        TableColumn thursPIDCol = new TableColumn("PID");
-        thursPIDCol.setCellFactory(param -> new TableCell<SalesOrder, String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                int index = getIndex();
-                if (index >= 0 && index < getTableView().getItems().size()) {
-                    SalesOrder so = getTableView().getItems().get(index);
-                    List<String> pids = so.getParts().stream().map(SalesOrder.Parts::getId).collect(Collectors.toList());
-                    setText(String.join("\n", pids));
-                } else {
-                    setText(null);
-                }
-            }
-        });
-        TableColumn thursQuantityCol = new TableColumn("Quantity");
-        thursQuantityCol.setCellFactory(param -> new TableCell<SalesOrder, Integer>() {
-            @Override
-            protected void updateItem(Integer item, boolean empty) {
-                super.updateItem(item, empty);
-                int index = getIndex();
-                if (index >= 0 && index < getTableView().getItems().size()) {
-                    SalesOrder so = getTableView().getItems().get(index);
-                    List<Integer> quantities = so.getParts().stream().map(SalesOrder.Parts::getQuantities).collect(Collectors.toList());
-                    setText(String.join("\n", quantities.stream().map(Object::toString).collect(Collectors.toList())));
-                } else {
-                    setText(null);
-                }
-            }
-        });
-        this.thursdayCol.getColumns().addAll(thursSOCol, thursPIDCol, thursQuantityCol);
-
-        TableColumn friSOCol = new TableColumn("SO");
-        TableColumn friPIDCol = new TableColumn("PID");
-        friPIDCol.setCellFactory(param -> new TableCell<SalesOrder, String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                int index = getIndex();
-                if (index >= 0 && index < getTableView().getItems().size()) {
-                    SalesOrder so = getTableView().getItems().get(index);
-                    List<String> pids = so.getParts().stream().map(SalesOrder.Parts::getId).collect(Collectors.toList());
-                    setText(String.join("\n", pids));
-                } else {
-                    setText(null);
-                }
-            }
-        });
-        TableColumn friQuantityCol = new TableColumn("Quantity");
-        friQuantityCol.setCellFactory(param -> new TableCell<SalesOrder, Integer>() {
-            @Override
-            protected void updateItem(Integer item, boolean empty) {
-                super.updateItem(item, empty);
-                int index = getIndex();
-                if (index >= 0 && index < getTableView().getItems().size()) {
-                    SalesOrder so = getTableView().getItems().get(index);
-                    List<Integer> quantities = so.getParts().stream().map(SalesOrder.Parts::getQuantities).collect(Collectors.toList());
-                    setText(String.join("\n", quantities.stream().map(Object::toString).collect(Collectors.toList())));
-                } else {
-                    setText(null);
-                }
-            }
-        });
-        this.fridayCol.getColumns().addAll(friSOCol, friPIDCol, friQuantityCol);
-
+        executorService.scheduleAtFixedRate(new ExpandableReaderThread(), 0, 30, TimeUnit.MINUTES);
 // Check the due date and add the SalesOrder to the appropriate TableColumn
         List<SalesOrder> monday = new ArrayList<>();
         for(int i = 0; i < 20; i++) {
@@ -230,76 +117,36 @@ public class MainFrameController {
                     new SalesOrder("SO-" + i, Arrays.asList(
                             new SalesOrder.Parts("FOCUS-11-00", new Random().nextInt(20) + 1),
                             new SalesOrder.Parts("FOCUS-51-00", new Random().nextInt(10) + 1)),
-                            LocalDate.of(2023, 1, 9)));
+                            LocalDate.of(2023, 1, 18)));
         }
 
-        List<SalesOrder> tuesday = new ArrayList<>();
         for(int i = 21; i < 50; i++) {
-            tuesday.add(
+            monday.add(
                     new SalesOrder("SO-" + i, Arrays.asList(
                             new SalesOrder.Parts("FOCUS-11-00", new Random().nextInt(20) + 1),
                             new SalesOrder.Parts("FOCUS-51-00", new Random().nextInt(10) + 1)),
-                            LocalDate.of(2023, 1, 10)));
+                            LocalDate.of(2023, 1, 19)));
         }
-        List<SalesOrder> wednesday = new ArrayList<>();
         for(int i = 51; i < 55; i++) {
-            wednesday.add(
+            monday.add(
                     new SalesOrder("SO-" + i, Arrays.asList(
                             new SalesOrder.Parts("FOCUS-11-00", new Random().nextInt(20) + 1),
                             new SalesOrder.Parts("FOCUS-51-00", new Random().nextInt(10) + 1)),
-                            LocalDate.of(2023, 1, 11)));
+                            LocalDate.of(2023, 1, 20)));
         }
 
-        List<SalesOrder> thursday = new ArrayList<>();
-        for(int i = 55; i < 58; i++) {
-            thursday.add(
-                    new SalesOrder("SO-" + i, Arrays.asList(
-                            new SalesOrder.Parts("FOCUS-11-00", new Random().nextInt(20) + 1),
-                            new SalesOrder.Parts("FOCUS-51-00", new Random().nextInt(10) + 1)),
-                            LocalDate.of(2023, 1, 12)));
-        }
 
         List<SalesOrder> salesList = new ArrayList<>();
         salesList.addAll(monday);
-        salesList.addAll(tuesday);
-        salesList.addAll(wednesday);
-        salesList.addAll(thursday);
 
         for(SalesOrder salesOrder : salesList) {
-            switch (salesOrder.getDueDate().getDayOfWeek()) {
-                case MONDAY:
-                    this.mondayTable.getItems().add(salesOrder);
-                    break;
-                case TUESDAY:
-                    this.tuesdayTable.getItems().add(salesOrder);
-                    break;
-                case WEDNESDAY:
-                    this.wednesdayTable.getItems().add(salesOrder);
-                    break;
-                case THURSDAY:
-                    this.thursdayTable.getItems().add(salesOrder);
-                    break;
-                case FRIDAY:
-                    this.fridayTable.getItems().add(salesOrder);
-                    break;
-                default:
-
+            if(salesOrder.getDueDate().getDayOfWeek() == LocalDate.now().getDayOfWeek()) {
+                this.firstTable.getItems().add(salesOrder);
+            } else if(salesOrder.getDueDate().getDayOfWeek() == LocalDate.now().getDayOfWeek().plus(1)) {
+                this.secondTable.getItems().add(salesOrder);
             }
         }
+
+        this.firstTable.getItems().clear();
     }
 }
-
-/*
-
-
-ObservableList<SalesOrder> salesOrders = FXCollections.observableArrayList(
-                new SalesOrder("SO000001", LocalDate.of(2023, 1,16)),
-                new SalesOrder("SO3000403", LocalDate.of(2023, 1,17)),
-                new SalesOrder("SO5555", LocalDate.of(2023, 1,20)),
-                new SalesOrder("SO5556", LocalDate.of(2023, 1,20)),
-                new SalesOrder("SO5557", LocalDate.of(2023, 1,20)),
-                new SalesOrder("SO5558", LocalDate.of(2023, 1,20)),
-                new SalesOrder("SO5559", LocalDate.of(2023, 1,20)),
-                new SalesOrder("SO5560", LocalDate.of(2023, 1,20))
-        );
- */

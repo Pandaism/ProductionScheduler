@@ -16,7 +16,7 @@ public class SalesOrderCell extends TableCell<SalesOrder, LocalDate> {
             int columnIndex = getTableColumn().getTableView().getColumns().indexOf(getTableColumn()) + 1;
             DayOfWeek columnDayOfWeek = DayOfWeek.of(columnIndex);
             if (dueDate.getDayOfWeek().equals(columnDayOfWeek)) {
-                setText(getTableRow().getItem().getSalesOrderNumber());
+                setText(getTableRow().getItem().getSalesOrderID());
             } else {
                 setText(null);
             }

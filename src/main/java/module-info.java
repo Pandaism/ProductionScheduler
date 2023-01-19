@@ -2,7 +2,6 @@ module net.safefleet.prod.productionscheduler {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.web;
-    requires mysql.connector.j;
     requires java.sql;
 
     opens net.safefleet.prod.productionscheduler to javafx.fxml;

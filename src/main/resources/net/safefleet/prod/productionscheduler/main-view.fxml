@@ -28,38 +28,17 @@
     <center>
         <AnchorPane style="-fx-background-color: #694869">
             <HBox AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0" style="-fx-background-color: #225425">
-                <ScrollPane fx:id="mondayScrollbar" fitToHeight="true" fitToWidth="true" HBox.hgrow="ALWAYS">
-                    <TableView fx:id="mondayTable" >
+                <ScrollPane fx:id="firstScrollbar" fitToHeight="true" fitToWidth="true" HBox.hgrow="ALWAYS">
+                    <TableView fx:id="firstTable" >
                         <columns>
-                            <TableColumn fx:id="mondayCol" text="Monday"/>
+                            <TableColumn fx:id="firstCol" text="Monday"/>
                         </columns>
                     </TableView>
                 </ScrollPane>
-                <ScrollPane fx:id="tuesdayScrollbar" fitToHeight="true" fitToWidth="true" HBox.hgrow="ALWAYS">
-                    <TableView fx:id="tuesdayTable">
+                <ScrollPane fx:id="secondScrollbar" fitToHeight="true" fitToWidth="true" HBox.hgrow="ALWAYS">
+                    <TableView fx:id="secondTable">
                         <columns>
-                            <TableColumn fx:id="tuesdayCol" text="Tuesday"/>
-                        </columns>
-                    </TableView>
-                </ScrollPane>
-                <ScrollPane fx:id="wednesdayScrollbar" fitToHeight="true" fitToWidth="true" HBox.hgrow="ALWAYS">
-                    <TableView fx:id="wednesdayTable">
-                        <columns>
-                            <TableColumn fx:id="wednesdayCol" text="Wednesday"/>
-                        </columns>
-                    </TableView>
-                </ScrollPane>
-                <ScrollPane fx:id="thursdayScrollbar" fitToHeight="true" fitToWidth="true" HBox.hgrow="ALWAYS">
-                    <TableView fx:id="thursdayTable">
-                        <columns>
-                            <TableColumn fx:id="thursdayCol" text="Thursday"/>
-                        </columns>
-                    </TableView>
-                </ScrollPane>
-                <ScrollPane fx:id="fridayScrollbar" fitToHeight="true" fitToWidth="true" HBox.hgrow="ALWAYS">
-                    <TableView fx:id="fridayTable">
-                        <columns>
-                            <TableColumn fx:id="fridayCol" text="Friday"/>
+                            <TableColumn fx:id="secondCol" text="Tuesday"/>
                         </columns>
                     </TableView>
                 </ScrollPane>

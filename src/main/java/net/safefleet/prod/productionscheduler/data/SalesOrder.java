@@ -4,22 +4,25 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class SalesOrder {
-    private String salesOrderNumber;
+    private String salesOrderID;
+    private String salesOrderType;
+    private String salesOrderStatus;
+    private String salesOrderClass;
     private List<Parts> parts;
     private LocalDate dueDate;
 
-    public SalesOrder(String salesOrderNumber, List<Parts> parts, LocalDate dueDate) {
-        this.salesOrderNumber = salesOrderNumber;
+    public SalesOrder(String salesOrderID, List<Parts> parts, LocalDate dueDate) {
+        this.salesOrderID = salesOrderID;
         this.parts = parts;
         this.dueDate = dueDate;
     }
 
-    public String getSalesOrderNumber() {
-        return salesOrderNumber;
+    public String getSalesOrderID() {
+        return salesOrderID;
     }
 
-    public void setSalesOrderNumber(String salesOrderNumber) {
-        this.salesOrderNumber = salesOrderNumber;
+    public void setSalesOrderID(String salesOrderID) {
+        this.salesOrderID = salesOrderID;
     }
 
     public LocalDate getDueDate() {
