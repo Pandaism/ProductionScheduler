@@ -1,20 +1,13 @@
 package net.safefleet.prod.productionscheduler.data;
 
-import java.time.LocalDate;
 import java.util.List;
 
 public class SalesOrder {
     private String salesOrderID;
-    private String salesOrderType;
-    private String salesOrderStatus;
-    private String salesOrderClass;
     private List<Parts> parts;
-    private LocalDate dueDate;
 
-    public SalesOrder(String salesOrderID, List<Parts> parts, LocalDate dueDate) {
+    public SalesOrder(String salesOrderID) {
         this.salesOrderID = salesOrderID;
-        this.parts = parts;
-        this.dueDate = dueDate;
     }
 
     public String getSalesOrderID() {
@@ -23,14 +16,6 @@ public class SalesOrder {
 
     public void setSalesOrderID(String salesOrderID) {
         this.salesOrderID = salesOrderID;
-    }
-
-    public LocalDate getDueDate() {
-        return dueDate;
-    }
-
-    public void setDueDate(LocalDate dueDate) {
-        this.dueDate = dueDate;
     }
 
     public List<Parts> getParts() {
@@ -44,10 +29,12 @@ public class SalesOrder {
     public static class Parts {
         private String id;
         private int quantities;
+        private String dueDate;
 
-        public Parts(String id, int quantities) {
+        public Parts(String id, int quantities, String dueDate) {
             this.id = id;
             this.quantities = quantities;
+            this.dueDate = dueDate;
         }
 
         public String getId() {
@@ -64,6 +51,14 @@ public class SalesOrder {
 
         public void setQuantities(int quantities) {
             this.quantities = quantities;
+        }
+
+        public String getDueDate() {
+            return dueDate;
+        }
+
+        public void setDueDate(String dueDate) {
+            this.dueDate = dueDate;
         }
     }
 }

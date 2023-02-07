@@ -25,7 +25,7 @@ tasks.withType(JavaCompile) {
 
 application {
     mainModule = 'net.safefleet.prod.productionscheduler'
-    mainClass = 'net.safefleet.prod.productionscheduler.ProductionScheduler'
+    mainClass = 'net.safefleet.prod.productionscheduler.Launcher'
 }
 
 javafx {
@@ -34,8 +34,7 @@ javafx {
 }
 
 dependencies {
-    // https://mvnrepository.com/artifact/com.mysql/mysql-connector-j
-    implementation 'com.mysql:mysql-connector-j:8.0.31'
+    implementation 'com.microsoft.sqlserver:mssql-jdbc:7.4.1.jre11'
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
@@ -55,4 +54,18 @@ jlink {
 
 jlinkZip {
     group = 'distribution'
+}
+
+jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    manifest {
+        attributes "Main-Class": "net.safefleet.prod.productionscheduler.Launcher"
+    }
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    } {
+        exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
+    }
 }

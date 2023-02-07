@@ -42,6 +42,27 @@
                         </columns>
                     </TableView>
                 </ScrollPane>
+                <ScrollPane fx:id="thirdScrollbar" fitToHeight="true" fitToWidth="true" HBox.hgrow="ALWAYS">
+                    <TableView fx:id="thirdTable">
+                        <columns>
+                            <TableColumn fx:id="thirdCol" text="Wednesday"/>
+                        </columns>
+                    </TableView>
+                </ScrollPane>
+                <ScrollPane fx:id="fourthScrollbar" fitToHeight="true" fitToWidth="true" HBox.hgrow="ALWAYS">
+                    <TableView fx:id="fourthTable">
+                        <columns>
+                            <TableColumn fx:id="fourthCol" text="Thursday"/>
+                        </columns>
+                    </TableView>
+                </ScrollPane>
+                <ScrollPane fx:id="fifthScrollbar" fitToHeight="true" fitToWidth="true" HBox.hgrow="ALWAYS">
+                    <TableView fx:id="fifthTable">
+                        <columns>
+                            <TableColumn fx:id="fifthCol" text="Friday"/>
+                        </columns>
+                    </TableView>
+                </ScrollPane>
             </HBox>
         </AnchorPane>
     </center>

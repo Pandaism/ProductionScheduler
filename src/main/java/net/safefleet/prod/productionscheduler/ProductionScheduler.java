@@ -6,10 +6,14 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 public class ProductionScheduler extends Application {
     public static Properties properties;
+    public static List<String> shippableItems;
+
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(ProductionScheduler.class.getResource("main-view.fxml"));
@@ -22,6 +26,28 @@ public class ProductionScheduler extends Application {
 
     public static void main(String[] args) {
         File settingsFile = new File("./settings.properties");
+        File shippableItemsFile = new File("./shippable_items.txt");
+        shippableItems = new ArrayList<>();
+
+        if(!shippableItemsFile.exists()) {
+            try {
+                shippableItemsFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if(shippableItemsFile.exists()) {
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(shippableItemsFile));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    shippableItems.add(line);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
         try {
             properties = new Properties();
@@ -45,6 +71,8 @@ public class ProductionScheduler extends Application {
             e.printStackTrace();
         }
 
-        launch();
+        launch(args);
     }
+
+
 }

@@ -1,14 +1,9 @@
 package net.safefleet.prod.productionscheduler.thread;
 
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
-import javafx.util.Duration;
 
 import java.util.Set;
 
