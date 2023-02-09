@@ -47,7 +47,8 @@ public class ExpandableReaderThread implements Runnable {
                 "WHERE (SOFOD.SO_ID = SOFOM.SO_ID) \n" +
                 "AND (" + parseShippableItems(ProductionScheduler.shippableItems) + ")\n" +
                 "AND (REV_SHIP_DATE BETWEEN '" + df.format(monday) + "' and '" + df.format(friday) + "')\n" +
-                "AND (SOFOM.SO_TYPE = 'NS')";
+                "AND (SOFOM.SO_TYPE = 'NS' AND SOFOM.ORDER_CLASS != 'R' AND SOFOM.ORDER_CLASS != 'R1'  AND SOFOM.ORDER_CLASS != 'R2' AND SOFOM.ORDER_CLASS != 'R3')" + "\n" +
+                "AND SOFOD.SO_LINE_STATUS = 'O'";
         Connection connection = null;
         ResultSet rs = null;
 
