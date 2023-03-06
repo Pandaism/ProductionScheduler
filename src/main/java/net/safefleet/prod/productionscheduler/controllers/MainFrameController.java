@@ -1,10 +1,8 @@
 package net.safefleet.prod.productionscheduler.controllers;
 
-import javafx.beans.binding.Bindings;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import net.safefleet.prod.productionscheduler.data.SalesOrder;
 import net.safefleet.prod.productionscheduler.thread.AutoScrollingThread;
 import net.safefleet.prod.productionscheduler.thread.DateUpdaterThread;
