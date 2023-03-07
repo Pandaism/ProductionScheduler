@@ -9,8 +9,8 @@ import java.util.Set;
 
 
 public class AutoScrollingThread implements Runnable {
-    private ScrollPane[] scrollPanes;
-    private boolean[] down;
+    private final ScrollPane[] scrollPanes;
+    private final boolean[] down;
 
     public AutoScrollingThread(ScrollPane... scrollPanes) {
         this.scrollPanes = scrollPanes;

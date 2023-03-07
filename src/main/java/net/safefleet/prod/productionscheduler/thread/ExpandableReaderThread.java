@@ -12,8 +12,8 @@ import java.util.*;
 import java.util.Date;
 
 public class ExpandableReaderThread implements Runnable {
-    private TableContainer[] containers;
-    private Map<String, List<SalesOrder.Parts>> orderMap = new HashMap<>();
+    private final TableContainer[] containers;
+    private final Map<String, List<SalesOrder.Parts>> orderMap = new HashMap<>();
 
     public ExpandableReaderThread(TableContainer... containers) {
         this.containers = containers;
@@ -71,8 +71,8 @@ public class ExpandableReaderThread implements Runnable {
     }
 
     public static class TableContainer {
-        private TableView<SalesOrder> tableView;
-        private TableColumn<SalesOrder, String> associatedColumn;
+        private final TableView<SalesOrder> tableView;
+        private final TableColumn<SalesOrder, String> associatedColumn;
 
         public TableContainer(TableView<SalesOrder> tableView, TableColumn<SalesOrder, String> associatedColumn) {
             this.tableView = tableView;

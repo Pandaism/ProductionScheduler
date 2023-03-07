@@ -207,28 +207,4 @@ public class MainFrameController {
             }
         }
     }
-
-//    private static class PIDCell extends TableCell<SalesOrder, String> {
-//        private final Label label;
-//
-//        public PIDCell() {
-//            this.label = new Label();
-//            this.label.setFont(Font.font(23));
-//            this.setGraphic(this.label);
-//            this.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-//        }
-//
-//        @Override
-//        protected void updateItem(String item, boolean empty) {
-//            super.updateItem(item, empty);
-//            int index = getIndex();
-//            if (index >= 0 && index < getTableView().getItems().size()) {
-//                SalesOrder so = getTableView().getItems().get(index);
-//                List<String> pids = so.getParts().stream().map(parts -> parts.getId().trim()).collect(Collectors.toList());
-//                this.label.setText(String.join("\n", pids));
-//            } else {
-//                this.label.setText(null);
-//            }
-//        }
-//    }
 }

@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class DateUpdaterThread implements Runnable {
-    private Label label;
+    private final Label label;
 
     public DateUpdaterThread(Label label) {
         this.label = label;
