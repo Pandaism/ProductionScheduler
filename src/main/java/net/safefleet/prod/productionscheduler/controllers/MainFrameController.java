@@ -3,6 +3,7 @@ package net.safefleet.prod.productionscheduler.controllers;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import net.safefleet.prod.productionscheduler.data.SalesOrder;
 import net.safefleet.prod.productionscheduler.thread.AutoScrollingThread;
 import net.safefleet.prod.productionscheduler.thread.DateUpdaterThread;
@@ -118,7 +119,7 @@ public class MainFrameController {
                         new ExpandableReaderThread.TableContainer(this.thirdTable, this.thirdCol),
                         new ExpandableReaderThread.TableContainer(this.fourthTable, this.fourthCol),
                         new ExpandableReaderThread.TableContainer(this.fifthTable, this.fifthCol)
-                ), 0, 30, TimeUnit.MINUTES);
+                ), 0, 15, TimeUnit.MINUTES);
 
 
     }
@@ -138,7 +139,11 @@ public class MainFrameController {
 
             if(item != null || !empty) {
                 if(item != null) {
-                    this.label.setText(item.substring(2));
+                    if(item.contains("SO")) {
+                        this.label.setText(item.substring(2));
+                    } else {
+                        this.label.setText(item);
+                    }
                 }
             } else {
                 this.label.setText(null);
@@ -170,12 +175,13 @@ public class MainFrameController {
     }
 
     private static class PIDCell extends TableCell<SalesOrder, String> {
-        private final Label label;
+        private final Text text;
 
         public PIDCell() {
-            this.label = new Label();
-            this.label.setFont(Font.font(23));
-            this.setGraphic(this.label);
+            this.text = new Text();
+            this.text.setFont(Font.font(23));
+            this.text.setStyle("-fx-fill: #fff;");
+            this.setGraphic(this.text);
             this.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         }
 
@@ -186,12 +192,43 @@ public class MainFrameController {
             if (index >= 0 && index < getTableView().getItems().size()) {
                 SalesOrder so = getTableView().getItems().get(index);
                 List<String> pids = so.getParts().stream().map(parts -> parts.getId().trim()).collect(Collectors.toList());
-                this.label.setText(String.join("\n", pids));
+                this.text.setText(String.join("\n", pids));
+
+                double textWidth = this.text.getBoundsInLocal().getWidth();
+                double colWidth = this.getTableColumn().getWidth();
+                if(textWidth > colWidth) {
+                    double newFontSize = 23 * colWidth / textWidth;
+                    // Set a minimum font size of 8 to ensure that the text remains visible
+                    newFontSize = Math.max(newFontSize, 8);
+                    this.text.setFont(Font.font(newFontSize - 1));
+                }
             } else {
-                this.label.setText(null);
+                this.text.setText(null);
             }
-
-
         }
     }
+
+//    private static class PIDCell extends TableCell<SalesOrder, String> {
+//        private final Label label;
+//
+//        public PIDCell() {
+//            this.label = new Label();
+//            this.label.setFont(Font.font(23));
+//            this.setGraphic(this.label);
+//            this.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+//        }
+//
+//        @Override
+//        protected void updateItem(String item, boolean empty) {
+//            super.updateItem(item, empty);
+//            int index = getIndex();
+//            if (index >= 0 && index < getTableView().getItems().size()) {
+//                SalesOrder so = getTableView().getItems().get(index);
+//                List<String> pids = so.getParts().stream().map(parts -> parts.getId().trim()).collect(Collectors.toList());
+//                this.label.setText(String.join("\n", pids));
+//            } else {
+//                this.label.setText(null);
+//            }
+//        }
+//    }
 }

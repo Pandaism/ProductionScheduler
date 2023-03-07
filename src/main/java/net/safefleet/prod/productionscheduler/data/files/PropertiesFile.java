@@ -18,10 +18,18 @@ public class PropertiesFile extends DataFile<Properties> {
             OutputStream outputStream;
             try {
                 outputStream = new FileOutputStream(super.file);
-                this.properties.setProperty("db.url", "localhost");
-                this.properties.setProperty("db.database", "database");
-                this.properties.setProperty("db.user", "user");
-                this.properties.setProperty("db.password", "password");
+                this.properties.setProperty("coban.db.url", "localhost");
+                this.properties.setProperty("coban.db.database", "database");
+                this.properties.setProperty("coban.db.user", "user");
+                this.properties.setProperty("coban.db.password", "password");
+                this.properties.setProperty("fleetmind.db.url", "localhost");
+                this.properties.setProperty("fleetmind.db.database", "database");
+                this.properties.setProperty("fleetmind.db.user", "user");
+                this.properties.setProperty("fleetmind.db.password", "password");
+                this.properties.setProperty("seon.db.url", "localhost");
+                this.properties.setProperty("seon.db.database", "database");
+                this.properties.setProperty("seon.db.user", "user");
+                this.properties.setProperty("seon.db.password", "password");
 
                 this.properties.store(outputStream, null);
                 outputStream.close();
