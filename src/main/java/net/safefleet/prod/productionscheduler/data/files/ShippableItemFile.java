@@ -7,9 +7,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ShippableItemFile extends DataFile<List<String>> {
+    public enum SOURCE {
+        COBAN("./coban_shippable_items.txt"), FLEETMIND("./fleetmind_shippable_items.txt"), SEON("./seon_shippable_items.txt");
 
-    public ShippableItemFile() {
-        super("./shippable_items.txt");
+        private String source;
+        SOURCE(String source) {
+            this.source = source;
+        }
+
+        public String getSource() {
+            return source;
+        }
+    }
+
+    public ShippableItemFile(SOURCE source) {
+        super(source.getSource());
     }
 
     @Override

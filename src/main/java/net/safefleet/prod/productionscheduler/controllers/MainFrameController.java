@@ -125,12 +125,13 @@ public class MainFrameController {
     }
 
     private static class SaleOrderCell extends TableCell<SalesOrder, String> {
-        private final Label label;
+        private final Text text;
 
         public SaleOrderCell() {
-            this.label = new Label();
-            this.label.setFont(Font.font(24));
-            this.setGraphic(this.label);
+            this.text = new Text();
+            this.text.setFont(Font.font(24));
+            this.text.setStyle("-fx-fill: #fff;");
+            this.setGraphic(this.text);
             this.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
         }
         @Override
@@ -140,13 +141,21 @@ public class MainFrameController {
             if(item != null || !empty) {
                 if(item != null) {
                     if(item.contains("SO")) {
-                        this.label.setText(item.substring(2));
+                        this.text.setText(item.substring(2));
                     } else {
-                        this.label.setText(item);
+                        this.text.setText(item);
                     }
                 }
+
+                double textWidth = this.text.getBoundsInLocal().getWidth();
+                double colWidth = this.getTableColumn().getWidth();
+                if(textWidth > colWidth) {
+                    double newFontSize = 23 * colWidth / textWidth;
+                    newFontSize = Math.max(newFontSize, 8);
+                    this.text.setFont(Font.font(newFontSize - 1));
+                }
             } else {
-                this.label.setText(null);
+                this.text.setText(null);
             }
         }
     }

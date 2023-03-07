@@ -22,6 +22,7 @@ public class ExpandableReaderThread implements Runnable {
     @Override
     public void run() {
         System.out.println("Updating tables");
+        this.orderMap.clear();
         for(TableContainer tableContainer : this.containers) {
             tableContainer.getTableView().getItems().clear();
         }

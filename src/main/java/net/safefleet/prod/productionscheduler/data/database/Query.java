@@ -52,7 +52,7 @@ public class Query {
         String soMasterQuery = "SELECT SOFOD.SO_ID, SOFOD.Part_ID, SOFOD.REV_SHIP_DATE, SOFOD.ORDER_QTY, SOFOM.SO_TYPE \n" +
                 "FROM " + this.database + ".dbo.SOFOD SOFOD, " + this.database + ".dbo.SOFOM SOFOM\n" +
                 "WHERE (SOFOD.SO_ID = SOFOM.SO_ID) \n" +
-                "AND (" + parseShippableItems(new ShippableItemFile().read()) + ")\n" +
+                "AND (" + parseShippableItems(new ShippableItemFile(ShippableItemFile.SOURCE.valueOf(this.corp.toUpperCase())).read()) + ")\n" +
                 "AND (REV_SHIP_DATE BETWEEN '" + df.format(monday) + "' and '" + df.format(friday) + "')\n" +
                 "AND (SOFOM.SO_TYPE = 'NS' AND SOFOM.ORDER_CLASS != 'R' AND SOFOM.ORDER_CLASS != 'R1'  AND SOFOM.ORDER_CLASS != 'R2' AND SOFOM.ORDER_CLASS != 'R3')" + "\n" +
                 "AND SOFOD.SO_LINE_STATUS = 'O'";
