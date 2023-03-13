@@ -3,47 +3,46 @@ package net.safefleet.prod.productionscheduler.data;
 import java.util.List;
 
 public class SalesOrder {
-    private final String salesOrderID;
-    private List<Parts> parts;
+    private String so;
+    private String dueDate;
+    private List<Parts> partsList;
 
-    public SalesOrder(String salesOrderID) {
-        this.salesOrderID = salesOrderID;
+    public SalesOrder(String so, String dueDate) {
+        this.so = so;
+        this.dueDate = dueDate;
     }
 
-    public String getSalesOrderID() {
-        return salesOrderID;
+    public String getSo() {
+        return so;
     }
 
-    public List<Parts> getParts() {
-        return parts;
+    public String getDueDate() {
+        return dueDate;
     }
 
-    public void setParts(List<Parts> parts) {
-        this.parts = parts;
+    public void setPartsList(List<Parts> partsList) {
+        this.partsList = partsList;
+    }
+
+    public List<Parts> getPartsList() {
+        return partsList;
     }
 
     public static class Parts {
-        private final String id;
-        private final int quantities;
-        private final String dueDate;
+        private String pid;
+        private int quantity;
 
-        public Parts(String id, int quantities, String dueDate) {
-            this.id = id;
-            this.quantities = quantities;
-            this.dueDate = dueDate;
+        public Parts(String pid, int quantity) {
+            this.pid = pid;
+            this.quantity = quantity;
         }
 
-        public String getId() {
-            return id;
+        public String getPid() {
+            return pid;
         }
 
-        public int getQuantities() {
-            return quantities;
+        public int getQuantity() {
+            return quantity;
         }
-
-        public String getDueDate() {
-            return dueDate;
-        }
-
     }
 }

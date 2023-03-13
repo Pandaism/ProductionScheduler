@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'net.safefleet.prod'
-version '1.5-SNAPSHOT'
+version '2.0alpha-SNAPSHOT'
 
 repositories {
     mavenCentral()

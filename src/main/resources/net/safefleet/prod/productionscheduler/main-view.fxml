@@ -6,9 +6,6 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.ScrollPane?>
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="net.safefleet.prod.productionscheduler.controllers.MainFrameController">
     <padding>
@@ -24,43 +21,7 @@
     </top>
     <center>
         <AnchorPane style="-fx-background-color: #694869">
-            <HBox AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0" style="-fx-background-color: #225425">
-                <ScrollPane fx:id="firstScrollbar" fitToHeight="true" fitToWidth="true" HBox.hgrow="ALWAYS">
-                    <TableView fx:id="firstTable" >
-                        <columns>
-                            <TableColumn fx:id="firstCol" text="Monday"/>
-                        </columns>
-                    </TableView>
-                </ScrollPane>
-                <ScrollPane fx:id="secondScrollbar" fitToHeight="true" fitToWidth="true" HBox.hgrow="ALWAYS">
-                    <TableView fx:id="secondTable">
-                        <columns>
-                            <TableColumn fx:id="secondCol" text="Tuesday"/>
-                        </columns>
-                    </TableView>
-                </ScrollPane>
-                <ScrollPane fx:id="thirdScrollbar" fitToHeight="true" fitToWidth="true" HBox.hgrow="ALWAYS">
-                    <TableView fx:id="thirdTable">
-                        <columns>
-                            <TableColumn fx:id="thirdCol" text="Wednesday"/>
-                        </columns>
-                    </TableView>
-                </ScrollPane>
-                <ScrollPane fx:id="fourthScrollbar" fitToHeight="true" fitToWidth="true" HBox.hgrow="ALWAYS">
-                    <TableView fx:id="fourthTable">
-                        <columns>
-                            <TableColumn fx:id="fourthCol" text="Thursday"/>
-                        </columns>
-                    </TableView>
-                </ScrollPane>
-                <ScrollPane fx:id="fifthScrollbar" fitToHeight="true" fitToWidth="true" HBox.hgrow="ALWAYS">
-                    <TableView fx:id="fifthTable">
-                        <columns>
-                            <TableColumn fx:id="fifthCol" text="Friday"/>
-                        </columns>
-                    </TableView>
-                </ScrollPane>
-            </HBox>
+            <HBox fx:id="centerBox" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0" style="-fx-background-color: #000000"/>
         </AnchorPane>
     </center>
 

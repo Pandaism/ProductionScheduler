@@ -1,91 +1,130 @@
 package net.safefleet.prod.productionscheduler.thread;
 
+import javafx.application.Platform;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
 import net.safefleet.prod.productionscheduler.data.SalesOrder;
+import net.safefleet.prod.productionscheduler.data.SalesOrderData;
 import net.safefleet.prod.productionscheduler.data.database.Query;
+import net.safefleet.prod.productionscheduler.fx.PIDCell;
+import net.safefleet.prod.productionscheduler.fx.QuantityCell;
+import net.safefleet.prod.productionscheduler.fx.SaleOrderCell;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.Date;
 
 public class ExpandableReaderThread implements Runnable {
-    private final TableContainer[] containers;
-    private final Map<String, List<SalesOrder.Parts>> orderMap = new HashMap<>();
+    private final ScrollPane[] containers;
+    private final HBox centerBox;
 
-    public ExpandableReaderThread(TableContainer... containers) {
+    public ExpandableReaderThread(HBox centerBox, ScrollPane... containers) {
+        this.centerBox = centerBox;
         this.containers = containers;
     }
 
     @Override
     public void run() {
         System.out.println("Updating tables");
-        this.orderMap.clear();
-        for(TableContainer tableContainer : this.containers) {
-            tableContainer.getTableView().getItems().clear();
-        }
-
-        Map<String, List<SalesOrder.Parts>> cobanMap = new Query(Query.CORP.COBAN).queryDB();
-        Map<String, List<SalesOrder.Parts>> fleetmindMap = new Query(Query.CORP.FLEETMIND).queryDB();
-
-        for (Map.Entry<String, List<SalesOrder.Parts>> entry : cobanMap.entrySet()) {
-            this.orderMap.put(entry.getKey(), new ArrayList<>(entry.getValue()));
-        }
-
-        for (Map.Entry<String, List<SalesOrder.Parts>> entry : fleetmindMap.entrySet()) {
-            String key = entry.getKey();
-            List<SalesOrder.Parts> value = entry.getValue();
-            if (this.orderMap.containsKey(key)) {
-                this.orderMap.get(key).addAll(value);
-            } else {
-                this.orderMap.put(key, value);
+        Platform.runLater(() -> {
+            this.centerBox.getChildren().clear();
+            for(ScrollPane scrollPane : this.containers) {
+                scrollPane.setContent(null);
             }
+        });
+
+        List<SalesOrderData> dataList = new ArrayList<>();
+        Set<String> dayOfWeeks = new TreeSet<>();
+
+        for(Query.CORP corp : Query.CORP.values()) {
+            Query query = new Query(corp);
+            dataList.addAll(query.queryDB());
+            dayOfWeeks.addAll(query.getDayOfWeeks());
         }
 
-        try {
-            for(String key : this.orderMap.keySet()) {
-                SalesOrder salesOrder = new SalesOrder(key);
-                salesOrder.setParts(this.orderMap.get(key));
+        if(dataList.size() > 0) {
+            List<SalesOrder> salesOrderList = new ArrayList<>();
+            SalesOrder currentSalesOrder = null;
+            List<SalesOrder.Parts> currentPartsList = null;
+            for (SalesOrderData salesOrderData : dataList) {
+                if (currentSalesOrder == null || !currentSalesOrder.getSo().equals(salesOrderData.getSalesOrderID())) {
+                    currentSalesOrder = new SalesOrder(salesOrderData.getSalesOrderID(), salesOrderData.getDueDate());
+                    currentPartsList = new ArrayList<>();
+                    currentSalesOrder.setPartsList(currentPartsList);
+                    salesOrderList.add(currentSalesOrder);
+                }
+                SalesOrder.Parts parts = new SalesOrder.Parts(salesOrderData.getPid(), salesOrderData.getQuantities());
+                currentPartsList.add(parts);
+            }
 
-                for(SalesOrder.Parts part : salesOrder.getParts()) {
-                    DateFormat sqlFormat = new SimpleDateFormat("yyyy-MM-dd 00:00:00.0");
-                    Date sqlDate = sqlFormat.parse(part.getDueDate());
-                    DateFormat dayOfWeek = new SimpleDateFormat("EEEE");
-                    String dayOfWeekDate = dayOfWeek.format(sqlDate);
+            DateFormat sqlFormat = new SimpleDateFormat("yyyy-MM-dd 00:00:00.0");
+            DateFormat dayOfWeekdf = new SimpleDateFormat("EEEE");
+            Map<String, TableView<SalesOrder>> tables = new HashMap<>();
 
-                    for(TableContainer container : this.containers) {
-                        if(dayOfWeekDate.equals(container.getAssociatedColumn().getText())) {
-                            TableView<SalesOrder> table = container.getTableView();
-                            if(!table.getItems().contains(salesOrder)) {
-                                container.getTableView().getItems().add(salesOrder);
-                            }
-                        }
+            int counter = 0;
+            for (String dayOfWeek : dayOfWeeks) {
+                int finalCounter = counter;
+                Platform.runLater(() -> {
+                    try {
+                        TableView<SalesOrder> table = new TableView<>();
+                        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+                        Date sqlDate = sqlFormat.parse(dayOfWeek);
+                        String dayOfWeekDate = dayOfWeekdf.format(sqlDate);
+                        TableColumn dateCol = new TableColumn(dayOfWeekDate);
+
+                        TableColumn soCol = new TableColumn("SO");
+                        soCol.setCellFactory(param -> new SaleOrderCell());
+                        soCol.setCellValueFactory(new PropertyValueFactory<>("so"));
+                        soCol.maxWidthProperty().bind(table.widthProperty().multiply(0.3));
+                        soCol.minWidthProperty().bind(table.widthProperty().multiply(0.3));
+
+                        TableColumn pidCol = new TableColumn("PID");
+                        pidCol.setCellFactory(param -> new PIDCell());
+
+                        TableColumn quantityCol = new TableColumn("Qty");
+                        quantityCol.setCellFactory(param -> new QuantityCell());
+                        quantityCol.maxWidthProperty().bind(table.widthProperty().multiply(0.2));
+                        quantityCol.minWidthProperty().bind(table.widthProperty().multiply(0.2));
+
+                        dateCol.getColumns().add(soCol);
+                        dateCol.getColumns().add(pidCol);
+                        dateCol.getColumns().add(quantityCol);
+                        table.getColumns().add(dateCol);
+                        this.containers[finalCounter].setContent(table);
+                        this.centerBox.getChildren().add(this.containers[finalCounter]);
+                        tables.put(dayOfWeekDate, table);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
                     }
+
+                });
+                counter++;
+            }
+
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            for(SalesOrder salesOrder : salesOrderList) {
+                try {
+                    Date sqlDate = sqlFormat.parse(salesOrder.getDueDate());
+                    String dayOfWeekDate = dayOfWeekdf.format(sqlDate);
+
+                    Platform.runLater(() -> {
+                        TableView<SalesOrder> tableView = tables.get(dayOfWeekDate);
+                        tableView.getItems().add(salesOrder);
+                    });
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
             }
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static class TableContainer {
-        private final TableView<SalesOrder> tableView;
-        private final TableColumn<SalesOrder, String> associatedColumn;
-
-        public TableContainer(TableView<SalesOrder> tableView, TableColumn<SalesOrder, String> associatedColumn) {
-            this.tableView = tableView;
-            this.associatedColumn = associatedColumn;
-        }
-
-        public TableView<SalesOrder> getTableView() {
-            return tableView;
-        }
-
-        public TableColumn<SalesOrder, String> getAssociatedColumn() {
-            return associatedColumn;
         }
     }
 }

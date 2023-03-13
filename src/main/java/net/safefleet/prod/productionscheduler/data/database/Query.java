@@ -1,7 +1,7 @@
 package net.safefleet.prod.productionscheduler.data.database;
 
 import net.safefleet.prod.productionscheduler.ProductionScheduler;
-import net.safefleet.prod.productionscheduler.data.SalesOrder;
+import net.safefleet.prod.productionscheduler.data.SalesOrderData;
 import net.safefleet.prod.productionscheduler.data.files.ShippableItemFile;
 
 import java.sql.*;
@@ -26,7 +26,8 @@ public class Query {
 
     private final String corp;
     private String database;
-    private final Map<String, List<SalesOrder.Parts>> orderMap = new HashMap<>();
+    private final List<SalesOrderData> partsList = new ArrayList<>();
+    private final List<String> dayOfWeeks = new ArrayList<>();
 
     public Query(CORP corp) {
         this.corp = corp.getCorp();
@@ -39,6 +40,10 @@ public class Query {
         String ip = ProductionScheduler.properties.getProperty(this.corp + ".db.url");
         String wsid = ProductionScheduler.properties.getProperty(this.corp + ".db.wsid");
         String url = "jdbc:sqlserver://" + ip + ":1433;databaseName=" + this.database + ";user="+username+";password="+password+";wsid="+wsid;
+
+        if(username.equals("Disabled")) {
+            return null;
+        }
 
         return DriverManager.getConnection(url);
     }
@@ -61,7 +66,7 @@ public class Query {
         return statement.executeQuery(soMasterQuery);
     }
 
-    public Map<String, List<SalesOrder.Parts>> queryDB() {
+    public List<SalesOrderData> queryDB() {
         Connection connection = null;
         ResultSet rs = null;
 
@@ -77,14 +82,10 @@ public class Query {
                     String shipDate = rs.getString("REV_SHIP_DATE");
                     String quantity = rs.getString("ORDER_QTY");
 
-                    if(!this.orderMap.containsKey(so)) {
-                        this.orderMap.put(so, new ArrayList<>());
+                    this.partsList.add(new SalesOrderData(so, part, Integer.parseInt(quantity.substring(0, quantity.indexOf('.'))), shipDate));
+                    if(!this.dayOfWeeks.contains(shipDate)) {
+                        this.dayOfWeeks.add(shipDate);
                     }
-
-                    List<SalesOrder.Parts> partsList = this.orderMap.get(so);
-                    partsList.add(new SalesOrder.Parts(part, Integer.parseInt(quantity.substring(0, quantity.indexOf('.'))), shipDate));
-
-                    this.orderMap.put(so, partsList);
                 }
 
             }
@@ -107,9 +108,12 @@ public class Query {
 
         }
 
-        return this.orderMap;
+        return this.partsList;
     }
 
+    public List<String> getDayOfWeeks() {
+        return dayOfWeeks;
+    }
 
     private static String parseShippableItems(List<String> shippableItems) {
         StringBuilder sb = new StringBuilder();
