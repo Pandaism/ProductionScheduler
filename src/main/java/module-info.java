@@ -3,6 +3,7 @@ module net.safefleet.prod.productionscheduler {
     requires javafx.fxml;
     requires javafx.web;
     requires java.sql;
+    requires org.slf4j;
 
     opens net.safefleet.prod.productionscheduler to javafx.fxml;
     exports net.safefleet.prod.productionscheduler;

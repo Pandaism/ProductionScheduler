@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'net.safefleet.prod'
-version '2.0alpha-SNAPSHOT'
+version '2.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -35,6 +35,8 @@ javafx {
 
 dependencies {
     implementation 'com.microsoft.sqlserver:mssql-jdbc:7.4.1.jre11'
+    implementation 'org.slf4j:slf4j-api:1.7.32'
+    implementation 'ch.qos.logback:logback-classic:1.2.6'
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
@@ -60,7 +62,8 @@ jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
     manifest {
-        attributes "Main-Class": "net.safefleet.prod.productionscheduler.Launcher"
+        attributes "Main-Class": "net.safefleet.prod.productionscheduler.Launcher",
+        "Implementation-Version": project.version
     }
 
     from {
