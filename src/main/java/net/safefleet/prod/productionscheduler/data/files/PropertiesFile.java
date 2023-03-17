@@ -35,11 +35,9 @@ public class PropertiesFile extends DataFile<Properties> {
     protected void writeDefaults() {
         // If the properties file doesn't exist, create and populate it with default values
         if(!super.file.exists()) {
-            OutputStream outputStream;
-            try {
-                // Create a new FileOutputStream for the properties file
-                outputStream = new FileOutputStream(super.file);
 
+            // Create a new FileOutputStream for the properties file
+            try (OutputStream outputStream = new FileOutputStream(super.file)) {
                 // Set default properties values
                 // Add default values for each company's database connection properties
                 this.properties.setProperty("coban.db.url", "localhost");
@@ -74,11 +72,8 @@ public class PropertiesFile extends DataFile<Properties> {
      */
     @Override
     public Properties read() {
-        InputStream inputStream;
-        try {
-            // Create a new FileInputStream for the properties file
-            inputStream = new FileInputStream(super.file);
-
+        // Create a new FileInputStream for the properties file
+        try(InputStream inputStream = new FileInputStream(super.file)) {
             // Load the properties from the input stream
             this.properties.load(inputStream);
 

@@ -5,6 +5,7 @@ import javafx.scene.Node;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
 
+import java.util.Arrays;
 import java.util.Set;
 
 /**
@@ -13,6 +14,7 @@ import java.util.Set;
  * scroll up and down through the ScrollPanes in a continuous loop.
  */
 public class AutoScrollingThread implements Runnable {
+    private double scrollSteps;
     private final ScrollPane[] scrollPanes;
     private final boolean[] down;
 
@@ -21,9 +23,13 @@ public class AutoScrollingThread implements Runnable {
      *
      * @param scrollPanes The ScrollPane objects to be auto-scrolled.
      */
-    public AutoScrollingThread(ScrollPane... scrollPanes) {
+    public AutoScrollingThread(double scrollSteps, ScrollPane... scrollPanes) {
+        this.scrollSteps = scrollSteps;
         this.scrollPanes = scrollPanes;
-        this.down = new boolean[]{true, true, true, true, true};
+
+        // Fill 'down' array (size of argument passed) with true
+        this.down = new boolean[scrollPanes.length];
+        Arrays.fill(this.down, true);
     }
 
     /**
@@ -50,7 +56,7 @@ public class AutoScrollingThread implements Runnable {
                             int finalI = i;
                             // Update the ScrollBar value on the JavaFX application thread
                             Platform.runLater(() -> {
-                                bar.adjustValue(bar.getValue() + .001);
+                                bar.adjustValue(bar.getValue() + this.scrollSteps);
                                 // If the ScrollBar reaches the bottom, set the 'down' flag to false
                                 if(bar.getValue() >= 1) {
                                     this.down[finalI] = false;
@@ -61,7 +67,7 @@ public class AutoScrollingThread implements Runnable {
                             int finalI1 = i;
                             // Update the ScrollBar value on the JavaFX application thread
                             Platform.runLater(() -> {
-                                bar.adjustValue(bar.getValue() - .001);
+                                bar.adjustValue(bar.getValue() - this.scrollSteps);
                                 // If the ScrollBar reaches the top, set the 'down' flag to true
                                 if(bar.getValue() <= 0) {
                                     this.down[finalI1] = true;

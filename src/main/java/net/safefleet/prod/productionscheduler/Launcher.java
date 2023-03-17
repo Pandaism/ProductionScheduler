@@ -19,7 +19,11 @@ public class Launcher {
         // Log a message indicating the Production Scheduler has started successfully and display its version
         LOGGER.info("Production Schedule started successfully. Version: {}", Launcher.class.getPackage().getImplementationVersion());
 
-        // Call the main method of the ProductionScheduler class
-        ProductionScheduler.main(args);
+        try {
+            // Call the main method of the ProductionScheduler class
+            ProductionScheduler.main(args);
+        } catch (Exception e) {
+            LOGGER.error("An error occurred while executing the ProductionScheduler", e);
+        }
     }
 }

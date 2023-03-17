@@ -20,13 +20,15 @@ public class MainFrameController {
     public Label headerText;
 
     // Declare ScrollPane objects for the user interface
-    public ScrollPane firstScrollbar;
-    public ScrollPane secondScrollbar;
-    public ScrollPane thirdScrollbar;
-    public ScrollPane fourthScrollbar;
-    public ScrollPane fifthScrollbar;
+    private final ScrollPane firstScrollbar;
+    private final ScrollPane secondScrollbar;
+    private final ScrollPane thirdScrollbar;
+    private final ScrollPane fourthScrollbar;
+    private final ScrollPane fifthScrollbar;
     // Declare an HBox object for the centerBox
     public HBox centerBox;
+    // Declare a ScheduledExecutorService for managing threads
+    private ScheduledExecutorService executorService;
 
     /**
      * MainFrameController constructor initializes ScrollPane objects.
@@ -65,15 +67,31 @@ public class MainFrameController {
         applyScrollPaneSetting(this.fifthScrollbar);
 
         // Create an executor service with a fixed thread pool of size 3
-        ScheduledExecutorService executorService = Executors.newScheduledThreadPool(3);
+        this.executorService = Executors.newScheduledThreadPool(3);
         // Schedule a DateUpdaterThread to run daily
-        executorService.scheduleAtFixedRate(new DateUpdaterThread(this.headerText), 0, 1, TimeUnit.DAYS);
+        this.executorService.scheduleAtFixedRate(new DateUpdaterThread(this.headerText), 0, 1, TimeUnit.DAYS);
         // Schedule an AutoScrollingThread to run every 5 seconds
-        executorService.scheduleAtFixedRate(new AutoScrollingThread(this.firstScrollbar, this.secondScrollbar, this.thirdScrollbar, this.fourthScrollbar, this.fifthScrollbar), 0, 5, TimeUnit.SECONDS);
+        this.executorService.scheduleAtFixedRate(new AutoScrollingThread(.001, this.firstScrollbar, this.secondScrollbar, this.thirdScrollbar, this.fourthScrollbar, this.fifthScrollbar), 0, 5, TimeUnit.SECONDS);
         // Schedule an ExpandableReaderThread to run every 15 minutes
-        executorService.scheduleAtFixedRate(
+        this.executorService.scheduleAtFixedRate(
                 new ExpandableReaderThread(
                         this.centerBox, this.firstScrollbar, this.secondScrollbar, this.thirdScrollbar, this.fourthScrollbar, this.fifthScrollbar
                 ), 0, 15, TimeUnit.MINUTES);
+    }
+
+    /**
+     * Provide a method to safety shutdown thread when the application closes
+     */
+    public void shutdown() {
+        if (this.executorService != null) {
+            this.executorService.shutdown();
+            try {
+                if (!this.executorService.awaitTermination(5, TimeUnit.SECONDS)) {
+                    this.executorService.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                this.executorService.shutdownNow();
+            }
+        }
     }
 }

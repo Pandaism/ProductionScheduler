@@ -17,11 +17,11 @@ java -jar ProductionScheduler-x.x-SNAPSHOT.jar
 
 Populate the created settings.properties with the proper credentials to establish connection Expandable:
 ```
-db.user=user
-db.database=database
-db.password=password
-db.url=ip address
-db.wsid=wsid
+company.db.user=user
+company.db.database=database
+company.db.password=password
+company.db.url=ip address
+company.db.wsid=wsid
 ```
 
 Populate the created shippable_items.txt with part numbers you want to view:

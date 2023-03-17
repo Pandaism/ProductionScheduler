@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import net.safefleet.prod.productionscheduler.controllers.MainFrameController;
 import net.safefleet.prod.productionscheduler.data.files.PropertiesFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,26 +31,36 @@ public class ProductionScheduler extends Application {
      */
     @Override
     public void start(Stage stage) throws IOException {
-        // Load the main-view FXML file
-        FXMLLoader fxmlLoader = new FXMLLoader(ProductionScheduler.class.getResource("main-view.fxml"));
+        try {
+            // Load the main-view FXML file
+            FXMLLoader fxmlLoader = new FXMLLoader(ProductionScheduler.class.getResource("main-view.fxml"));
 
-        // Create a new Scene with the loaded FXML layout and set dimensions
-        Scene scene = new Scene(fxmlLoader.load(), 320, 240);
+            // Create a new Scene with the loaded FXML layout and set dimensions
+            Scene scene = new Scene(fxmlLoader.load(), 320, 240);
 
-        // Add the dark-theme CSS stylesheet to the scene
-        scene.getStylesheets().add(getClass().getResource("dark-theme.css").toExternalForm());
+            // Create an access point into the MainFrameController class
+            MainFrameController controller = fxmlLoader.getController();
 
-        // Set the stage to full screen
-        stage.setFullScreen(true);
+            // Add the dark-theme CSS stylesheet to the scene
+            scene.getStylesheets().add(getClass().getResource("dark-theme.css").toExternalForm());
 
-        // Set the scene onto the stage
-        stage.setScene(scene);
+            // Set the stage to full screen
+            stage.setFullScreen(true);
 
-        // Show the stage
-        stage.show();
+            // Set the scene onto the stage
+            stage.setScene(scene);
 
-        // Log a message indicating the GUI has been initialized
-        LOGGER.info("GUI initialized");
+            // Set the stage to call shutdown method to safely shutdown threads running in the background
+            stage.setOnCloseRequest(event -> controller.shutdown());
+
+            // Show the stage
+            stage.show();
+
+            // Log a message indicating the GUI has been initialized
+            LOGGER.info("GUI initialized");
+        } catch (IOException e) {
+            LOGGER.error("An error occurred while loading the FXML file", e);
+        }
     }
 
     /**

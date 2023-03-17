@@ -59,9 +59,8 @@ public class ShippableItemFile extends DataFile<List<String>> {
 
         // If the shippable items file exists, read its contents
         if (super.file.exists()) {
-            try {
-                // Create a BufferedReader to read the file
-                BufferedReader reader = new BufferedReader(new FileReader(super.file));
+            // Create a BufferedReader to read the file
+            try(BufferedReader reader = new BufferedReader(new FileReader(super.file))) {
                 String line;
                 // Read the file line by line, adding each line to the shippableItems list
                 while ((line = reader.readLine()) != null) {

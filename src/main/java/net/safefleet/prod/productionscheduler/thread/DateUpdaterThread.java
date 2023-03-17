@@ -1,5 +1,6 @@
 package net.safefleet.prod.productionscheduler.thread;
 
+import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.text.Font;
 import org.slf4j.Logger;
@@ -36,21 +37,23 @@ public class DateUpdaterThread implements Runnable {
      */
     @Override
     public void run() {
-        // Get the current date
-        LocalDate now = LocalDate.now();
-        // Get the Monday of the current week
-        LocalDate monday = now.with(DayOfWeek.MONDAY);
-        // Get the Friday of the current week
-        LocalDate friday = now.with(DayOfWeek.FRIDAY);
-        // Define a date formatter
-        DateTimeFormatter df = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+        Platform.runLater(() -> {
+            // Get the current date
+            LocalDate now = LocalDate.now();
+            // Get the Monday of the current week
+            LocalDate monday = now.with(DayOfWeek.MONDAY);
+            // Get the Friday of the current week
+            LocalDate friday = now.with(DayOfWeek.FRIDAY);
+            // Define a date formatter
+            DateTimeFormatter df = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
-        // Set the font of the label
-        this.label.setFont(new Font("Arial", 26));
-        // Update the label text with the formatted date range
-        this.label.setText("Production Schedule for " + df.format(monday) + " to " + df.format(friday));
+            // Set the font of the label
+            this.label.setFont(new Font("Arial", 26));
+            // Update the label text with the formatted date range
+            this.label.setText("Production Schedule for " + df.format(monday) + " to " + df.format(friday));
 
-        // Log the date range update
-        LOGGER.info("Advancing week {} to {}", df.format(monday), df.format(friday));
+            // Log the date range update
+            LOGGER.info("Advancing week {} to {}", df.format(monday), df.format(friday));
+        });
     }
 }
