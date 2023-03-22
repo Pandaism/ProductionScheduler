@@ -162,39 +162,46 @@ public class ExpandableReaderThread implements Runnable {
 
 
     /**
-     * Creates a list of SalesOrder objects from the fetched SalesOrderData objects.
+     * Creates a set of SalesOrder objects from the fetched SalesOrderData objects.
      *
-     * @return A list of SalesOrder objects created from the fetched data.
+     * @return A set of SalesOrder objects created from the fetched data.
      */
-    private List<SalesOrder> createSalesOrders() {
-        // Initialize salesOrderList as an empty ArrayList to store SalesOrder objects
-        List<SalesOrder> salesOrderList = new ArrayList<>();
-        // Initialize currentSalesOrder and currentPartsList as null
-        SalesOrder currentSalesOrder = null;
-        List<SalesOrder.Parts> currentPartsList = null;
+    private Set<SalesOrder> createSalesOrders() {
+
+        // Initialize salesOrderSet as an empty Set to store SalesOrder objects
+        Set<SalesOrder> salesOrderSet = new HashSet<>();
 
         // Iterate through each SalesOrderData object in the dataList
         for (SalesOrderData salesOrderData : this.dataList) {
-            // Check if currentSalesOrder is null or if the salesOrderID has changed
-            if (currentSalesOrder == null || !currentSalesOrder.getSo().equals(salesOrderData.getSalesOrderID())) {
-                // Create a new SalesOrder object with the salesOrderID and dueDate from salesOrderData
-                currentSalesOrder = new SalesOrder(salesOrderData.getSalesOrderID(), salesOrderData.getDueDate());
-                // Initialize currentPartsList as a new ArrayList
-                currentPartsList = new ArrayList<>();
-                // Set the parts list for the currentSalesOrder
-                currentSalesOrder.setPartsList(currentPartsList);
-                // Add the currentSalesOrder to the salesOrderList
-                salesOrderList.add(currentSalesOrder);
+            // Create placeholder variable for SalesOrder
+            SalesOrder targettedSalesOrder = null;
+            // Iterate through each SaleOrder object in the salesOrderSet
+            for(SalesOrder salesOrder : salesOrderSet) {
+                // If a SalesOrder sale order number (so ID) and due date matches, initialize the placeholder
+                if(salesOrder.getSo().equals(salesOrderData.getSalesOrderID()) && salesOrder.getDueDate().equals(salesOrderData.getDueDate())) {
+                    targettedSalesOrder = salesOrder;
+                    break;
+                }
             }
 
-            // Create a new SalesOrder.Parts object with the pid and quantities from salesOrderData
-            SalesOrder.Parts parts = new SalesOrder.Parts(salesOrderData.getPid(), salesOrderData.getQuantities());
-            // Add the parts object to the currentPartsList
-            currentPartsList.add(parts);
+            if(targettedSalesOrder == null) {
+                // If no target was found, create new SaleOrder object
+                targettedSalesOrder = new SalesOrder(salesOrderData.getSalesOrderID(), salesOrderData.getDueDate());
+                // Set the new SaleOrder object with first part in list
+                targettedSalesOrder.setPartsList(new ArrayList<>(Collections.singleton(new SalesOrder.Parts(salesOrderData.getPid(), salesOrderData.getQuantities()))));
+            } else {
+                // If a target was found, get the target's parts list
+                List<SalesOrder.Parts> parts = targettedSalesOrder.getPartsList();
+                // Add new part to target's parts list
+                parts.add(new SalesOrder.Parts(salesOrderData.getPid(), salesOrderData.getQuantities()));
+            }
+
+            // Add saleorder to SalesOrderSet
+            salesOrderSet.add(targettedSalesOrder);
         }
 
         // Return the list of SalesOrder objects
-        return salesOrderList;
+        return salesOrderSet;
     }
 
     /**
@@ -211,20 +218,19 @@ public class ExpandableReaderThread implements Runnable {
     /**
      * Populates the tables with the SalesOrder objects.
      *
-     * @param salesOrderList A list of SalesOrder objects to populate the tables.
+     * @param salesOrderSet A set of SalesOrder objects to populate the tables.
      * @param sqlFormat      The DateFormat used for parsing SQL date strings.
      * @param dayOfWeekdf    The DateFormat used for formatting day of week strings.
      * @param tables         A map that associates day of the week strings with their respective TableView objects.
      */
-    private void populateTable(List<SalesOrder> salesOrderList, DateFormat sqlFormat, DateFormat dayOfWeekdf, Map<String, TableView<SalesOrder>> tables) {
-        // Iterate through each SalesOrder in the salesOrderList
-        for(SalesOrder salesOrder : salesOrderList) {
+    private void populateTable(Set<SalesOrder> salesOrderSet, DateFormat sqlFormat, DateFormat dayOfWeekdf, Map<String, TableView<SalesOrder>> tables) {
+        // Iterate through each SalesOrder in the salesOrderSet
+        for(SalesOrder salesOrder : salesOrderSet) {
             try {
                 // Parse the dueDate of the SalesOrder using the sqlFormat DateFormat
                 Date sqlDate = sqlFormat.parse(salesOrder.getDueDate());
                 // Convert the parsed sqlDate to a day of the week string using the dayOfWeekdf DateFormat
                 String dayOfWeekDate = dayOfWeekdf.format(sqlDate);
-
                 // Run the following code on the JavaFX Application Thread
                 Platform.runLater(() -> {
                     // Get the TableView for the day of the week from the tables Map
@@ -303,11 +309,10 @@ public class ExpandableReaderThread implements Runnable {
         clearExistingTables();
         // Fetch data for SalesOrders from the database
         fetchData();
-
         // Check if there is any data in the dataList
         if(this.dataList.size() > 0) {
             // Create SalesOrder objects from the fetched data
-            List<SalesOrder> salesOrderList = createSalesOrders();
+            Set<SalesOrder> salesOrderList = createSalesOrders();
 
             // Set up the required date formats for parsing and formatting dates
             DateFormat sqlFormat = new SimpleDateFormat("yyyy-MM-dd 00:00:00.0");
